@@ -11,3 +11,6 @@ eventの数だけサブルーチンを立ち上げ、その中でサブルーチ
 基礎的なmutexを試す
 
 [URL](https://go.dev/play/p/sAX-4sYoC7U)
+
+
+url解析
