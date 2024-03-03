@@ -50,8 +50,7 @@ func (*Z) Decode(dst any) error {
 	st := reflect.TypeOf(v)
 	if v.Type().Kind() == reflect.Struct {
 		for i := 0; i < v.NumField(); i++ {
-			a := st.Field(i)
-			fmt.Println(strings.Split(a.Tag.Get("sql_column"), ","))
+			fmt.Println(strings.Split(st.Field(i).Tag.Get("sql_column"), ","))
 		}
 	}
 
