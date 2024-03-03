@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
@@ -38,17 +39,22 @@ func NewZ(opts ...ZOption) *Z {
 	return g
 }
 
-func (z *Z) Decode(dst any) error {
+func (*Z) Decode(dst any) error {
 	v := reflect.ValueOf(dst)
-	st := reflect.TypeOf(dst)
-	if v.Elem().Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
-		return fmt.Errorf("error")
+
+	if v.Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
+		return errors.New("schema: interface must be a pointer to struct")
+	}
+	// todo: sql_columnが取得できない
+	v = v.Elem()
+	st := reflect.TypeOf(v)
+	if v.Type().Kind() == reflect.Struct {
+		for i := 0; i < v.NumField(); i++ {
+			a := st.Field(i)
+			fmt.Println(strings.Split(a.Tag.Get("sql_column"), ","))
+		}
 	}
 
-	for i := 0; i < v.NumField(); i++ {
-		a := st.Field(i)
-		fmt.Println(strings.Split(a.Tag.Get("sql_column"), ","))
-	}
 	return nil
 }
 
@@ -62,7 +68,7 @@ func main() {
 
 type S struct {
 	F string `sql_column:"F,default:test"`
-	A string `json:"a"`
+	A string `sql_column:"a"`
 }
 
 func getTag(s any) {
