@@ -40,10 +40,15 @@ func NewZ(opts ...ZOption) *Z {
 
 func (z *Z) Decode(dst any) error {
 	v := reflect.ValueOf(dst)
-	if v.Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
+	st := reflect.TypeOf(dst)
+	if v.Elem().Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
 		return fmt.Errorf("error")
 	}
-	fmt.Println("success")
+
+	for i := 0; i < v.NumField(); i++ {
+		a := st.Field(i)
+		fmt.Println(strings.Split(a.Tag.Get("sql_column"), ","))
+	}
 	return nil
 }
 
@@ -60,7 +65,7 @@ type S struct {
 	A string `json:"a"`
 }
 
-func getTag(s S) {
+func getTag(s any) {
 	st := reflect.TypeOf(s)
 	v := reflect.ValueOf(s)
 	for i := 0; i < v.NumField(); i++ {
